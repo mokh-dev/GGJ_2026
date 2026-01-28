@@ -15,8 +15,8 @@ public class Enemy : MonoBehaviour
 
 
     [Header("Player Detection")]
-    [SerializeField] private float _fovDetectionAngle;
-    [SerializeField] private float _fovDetectionRange;
+    [SerializeField] private float _detectionFovAngle;
+    [SerializeField] private float _detectionRange;
     private GameObject playerObj;
     
 
@@ -44,7 +44,6 @@ public class Enemy : MonoBehaviour
 
     private void Aggrivated()
     {
-        Debug.Log("angry");
         PointEnemyToPlayer();
         if (canFire) FireBullet();
     }
@@ -54,10 +53,18 @@ public class Enemy : MonoBehaviour
         Vector2 playerDirection = (playerObj.transform.position - transform.position).normalized;
         float playerAngleFromView = Vector2.Angle(transform.up, playerDirection);
 
-        if (playerAngleFromView > _fovDetectionAngle/2) return false;
-        if (Vector2.Distance(playerObj.transform.position, transform.position) > _fovDetectionRange) return false;
+        if (playerAngleFromView > _detectionFovAngle/2) return false;
+        if (Vector2.Distance(playerObj.transform.position, transform.position) > _detectionRange) return false;
+        if (RaycastCheck(playerDirection) == false) return false;
 
         return true;
+    }
+
+    private bool RaycastCheck(Vector2 playerDirection)
+    {
+        RaycastHit2D hit = Physics2D.Raycast(_firePoint.position, playerDirection, _detectionRange);
+
+        return hit.collider.gameObject.CompareTag("Player");
     }
 
     private void PointEnemyToPlayer()

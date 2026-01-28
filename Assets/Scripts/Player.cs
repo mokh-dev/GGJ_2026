@@ -55,8 +55,8 @@ public class Player : MonoBehaviour
 
     private void PointPlayerToMouse()
     {
-        Vector2 mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 mouseDirection = (mousePos - (Vector2)transform.position).normalized;
+        Vector2 mousePosition = cam.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 mouseDirection = (mousePosition - (Vector2)transform.position).normalized;
 
         float playerAngle = (Mathf.Atan2(mouseDirection.y, mouseDirection.x) * Mathf.Rad2Deg) + _lookRotationOffset;
 
