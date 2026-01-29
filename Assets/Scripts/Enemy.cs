@@ -34,13 +34,12 @@ public class Enemy : MonoBehaviour
         cam = Camera.main;
         playerObj = GameObject.FindGameObjectWithTag("Player");
     }
-
-
     void Update()
     {
         if (CanSeePlayer()) Aggrivated(); 
 
     }
+
 
     private void Aggrivated()
     {
@@ -59,13 +58,14 @@ public class Enemy : MonoBehaviour
 
         return true;
     }
-
     private bool RaycastCheck(Vector2 playerDirection)
     {
         RaycastHit2D hit = Physics2D.Raycast(_firePoint.position, playerDirection, _detectionRange);
 
         return hit.collider.gameObject.CompareTag("Player");
     }
+
+
 
     private void PointEnemyToPlayer()
     {
@@ -74,7 +74,6 @@ public class Enemy : MonoBehaviour
 
         rb.SetRotation(enemyAngle);
     }
-
     private void FireBullet()
     {
         Quaternion enemyRotation = Quaternion.AngleAxis(transform.eulerAngles.z, Vector3.forward);
@@ -95,12 +94,16 @@ public class Enemy : MonoBehaviour
         canFire = true;
     }
 
+
+
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Bullet"))
         {
+            GameManager.Instance.EnemyEliminated();
+
+            Destroy(collision.gameObject);
             Destroy(gameObject);
-            Debug.Log("enemy hit");
         }
     }
 }

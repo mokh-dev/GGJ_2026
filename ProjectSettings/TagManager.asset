@@ -6,6 +6,10 @@ TagManager:
   tags:
   - Enemy
   - Bullet
+  - Wall
+  - Antidote
+  - Hostage
+  - Exit
   layers:
   - Default
   - TransparentFX

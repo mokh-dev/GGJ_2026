@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private Camera cam;
 
-
+    private int antidoteCount;
 
 
 
@@ -98,7 +98,27 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bullet"))
         {
-            Debug.Log("player hit");
+            Destroy(collision.gameObject);
+        }
+
+        if (collision.gameObject.CompareTag("Antidote"))
+        {
+            antidoteCount++;
+            Destroy(collision.gameObject);
+        }
+
+        if (collision.gameObject.CompareTag("Hostage"))
+        {
+            if (antidoteCount > 0)
+            {
+                antidoteCount--;
+                collision.gameObject.GetComponent<Hostage>().CureHostage();
+            } 
+        }
+
+        if (collision.gameObject.CompareTag("Exit"))
+        {
+            GameManager.Instance.PlayerExited();
         }
     }
 }
