@@ -26,15 +26,26 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        // UpdateMissionStatusUI(gameManager.CompletedTimeMission, _completionTimeText);
-        // UpdateMissionStatusUI(gameManager.CompletedEliminationMission, _enemyEliminatedText);
-        // UpdateMissionStatusUI(gameManager.CompletedCureMission, _hostageCuredText);
-        // UpdateMissionStatusUI(gameManager.CompletedSaveMission, _hostageSavedText);
+        UpdateMissionStatusUI(gameManager.CompletedTimeMission, gameManager.TimePassed, gameManager.RequiredCompletionTime, _completionTimeText);
+        UpdateMissionStatusUI(gameManager.CompletedEliminationMission, gameManager.EnemyEliminatedAmount, gameManager.RequiredEnemyEliminatedAmount,  _enemyEliminatedText);
+        UpdateMissionStatusUI(gameManager.CompletedCureMission, gameManager.HostageCuredAmount, gameManager.RequiredHostageCuredAmount, _hostageCuredText);
+        UpdateMissionStatusUI(gameManager.CompletedSaveMission, gameManager.HostageSavedAmount, gameManager.RequiredHostageSavedAmount, _hostageSavedText);
     }
 
-    private void UpdateMissionStatusUI(bool missionCompletionStatus, float currentMissionStatusData, TextMeshProUGUI missionText)
+    private void UpdateMissionStatusUI(bool missionCompletionStatus, float currentMissionStatusData, float requiredMissionData, TextMeshProUGUI missionText)
     {
         if (missionText == null) return;
+
+        if (missionText != _completionTimeText)
+        {
+            missionText.text = ((int)currentMissionStatusData).ToString() + " / " + ((int)requiredMissionData).ToString(); 
+        }
+        else
+        {
+            missionText.text = Mathf.RoundToInt(currentMissionStatusData).ToString() + " / " + requiredMissionData.ToString(); 
+        }
+        
+        
 
         if (missionCompletionStatus == true)
         {

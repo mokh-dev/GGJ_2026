@@ -10,19 +10,19 @@ public class GameManager : MonoBehaviour
     public bool CompletedEliminationMission;
     public bool CompletedCureMission;
     public bool CompletedSaveMission;
-    public bool CompletedTimeMission = true;
+    public bool CompletedTimeMission;
 
-    [SerializeField] private int _requiredEnemyEliminatedAmount;
-    [SerializeField] private int _requiredHostageCuredAmount;
-    [SerializeField] private int _requiredHostageSavedAmount;
-    [SerializeField] private int _requiredCompletionTime;
+    public int RequiredEnemyEliminatedAmount;
+    public int RequiredHostageCuredAmount;
+    public int RequiredHostageSavedAmount;
+    public int RequiredCompletionTime;
 
 
     public int EnemyEliminatedAmount {get; private set;}
     public int HostageCuredAmount {get; private set;}
     public int HostageSavedAmount {get; private set;}
 
-    public float TimePassed;
+    public float TimePassed {get; private set;}
 
     private bool gameActive = true;
 
@@ -48,31 +48,32 @@ public class GameManager : MonoBehaviour
     {
         if (gameActive)
         {
+            MissionChecks();
+
             TimePassed += Time.deltaTime;
-            if ((CompletedTimeMission == true) && (TimePassed > _requiredCompletionTime)) CompletedTimeMission = false;
+            if ((CompletedTimeMission == true) && (TimePassed > (float)RequiredCompletionTime)) CompletedTimeMission = false;
         } 
     }
 
     public void PlayerExited()
     {
         gameActive = false;
-
-        if (CompletedLevel() == true) Debug.Log("Level Complete!");
     }
 
-    private bool CompletedLevel()
+    private void MissionChecks()
     {
-        if (EnemyEliminatedAmount >= _requiredEnemyEliminatedAmount) CompletedEliminationMission = true;
-        if (HostageCuredAmount >= _requiredHostageCuredAmount) CompletedCureMission = true;
-        if (HostageSavedAmount >= _requiredHostageSavedAmount) CompletedEliminationMission = true;
-
-
-        return true;
+        if (EnemyEliminatedAmount >= RequiredEnemyEliminatedAmount) CompletedEliminationMission = true;
+        if (HostageCuredAmount >= RequiredHostageCuredAmount) CompletedCureMission = true;
+        if (HostageSavedAmount >= RequiredHostageSavedAmount) CompletedSaveMission = true;
     }
 
     public void HostageCured()
     {
         HostageCuredAmount++;
+    }
+    public void HostageSaved()
+    {
+        HostageSavedAmount++;
     }
 
     public void EnemyEliminated()

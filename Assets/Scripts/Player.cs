@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -24,6 +25,11 @@ public class Player : MonoBehaviour
     private Camera cam;
 
     private int antidoteCount;
+
+    private List<Hostage> ConnectedHostages = new List<Hostage>();
+    public Hostage LastConnectedHostage {get {
+        if (ConnectedHostages.Count <= 0) return null;
+        return ConnectedHostages[ConnectedHostages.Count - 1];}}
 
 
 
@@ -94,6 +100,17 @@ public class Player : MonoBehaviour
     }
 
 
+    public void SaveAllConnectedHostages(Transform safeAreaPos)
+    {
+        foreach (Hostage hostage in ConnectedHostages)
+        {
+            hostage.SafeAreaPos = safeAreaPos;
+            hostage.SaveHostage();
+        }
+
+        ConnectedHostages = new List<Hostage>();
+    }
+
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Bullet"))
@@ -112,7 +129,17 @@ public class Player : MonoBehaviour
             if (antidoteCount > 0)
             {
                 antidoteCount--;
-                collision.gameObject.GetComponent<Hostage>().CureHostage();
+
+                if (LastConnectedHostage == null)
+                {
+                    collision.gameObject.GetComponent<Hostage>().CureHostage(gameObject);
+                }
+                else
+                {
+                    collision.gameObject.GetComponent<Hostage>().CureHostage(LastConnectedHostage.gameObject);
+                }
+
+                ConnectedHostages.Add(collision.gameObject.GetComponent<Hostage>());
             } 
         }
 
