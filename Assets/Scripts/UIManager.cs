@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI _completionTimeText;
     [SerializeField] private TextMeshProUGUI _enemyEliminatedText;
+    [SerializeField] private TextMeshProUGUI _enemyDetectionText;
     [SerializeField] private TextMeshProUGUI _hostageCuredText;
     [SerializeField] private TextMeshProUGUI _hostageSavedText;
     private GameManager gameManager;
@@ -26,10 +27,11 @@ public class UIManager : MonoBehaviour
 
     void Update()
     {
-        UpdateMissionStatusUI(gameManager.CompletedTimeMission, gameManager.TimePassed, gameManager.RequiredCompletionTime, _completionTimeText);
-        UpdateMissionStatusUI(gameManager.CompletedEliminationMission, gameManager.EnemyEliminatedAmount, gameManager.RequiredEnemyEliminatedAmount,  _enemyEliminatedText);
-        UpdateMissionStatusUI(gameManager.CompletedCureMission, gameManager.HostageCuredAmount, gameManager.RequiredHostageCuredAmount, _hostageCuredText);
-        UpdateMissionStatusUI(gameManager.CompletedSaveMission, gameManager.HostageSavedAmount, gameManager.RequiredHostageSavedAmount, _hostageSavedText);
+        if (gameManager.LevelHasTimeMission) UpdateMissionStatusUI(gameManager.CompletedTimeMission, gameManager.TimePassed, gameManager.RequiredCompletionTime, _completionTimeText);
+        if (gameManager.LevelHasEliminationMission) UpdateMissionStatusUI(gameManager.CompletedEliminationMission, gameManager.EnemyEliminatedAmount, gameManager.RequiredEnemyEliminatedAmount,  _enemyEliminatedText);
+        if (gameManager.LevelHasDetectionMission) UpdateMissionStatusUI(gameManager.CompletedDetectionMission, gameManager.EnemyDetectionAmount, gameManager.RequiredMaximumDetectionAmount,  _enemyDetectionText);
+        if (gameManager.LevelHasCureMission) UpdateMissionStatusUI(gameManager.CompletedCureMission, gameManager.HostageCuredAmount, gameManager.RequiredHostageCuredAmount, _hostageCuredText);
+        if (gameManager.LevelHasSaveMission) UpdateMissionStatusUI(gameManager.CompletedSaveMission, gameManager.HostageSavedAmount, gameManager.RequiredHostageSavedAmount, _hostageSavedText);
     }
 
     private void UpdateMissionStatusUI(bool missionCompletionStatus, float currentMissionStatusData, float requiredMissionData, TextMeshProUGUI missionText)

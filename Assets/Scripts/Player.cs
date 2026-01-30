@@ -13,16 +13,22 @@ public class Player : MonoBehaviour
 
     [Header("Shooting")]
     [SerializeField] private GameObject _bulletPre;
+    [SerializeField] private GameObject _rockPre;
     [SerializeField] private Transform _firePoint;
     [SerializeField] private float _bulletSpeed;
     [SerializeField] private float _firingCooldownTime;
     [SerializeField] private float _bulletLifeSpan;
+    [SerializeField] private float _rockSpeed;
+    [SerializeField] private float _rockCooldownTime;
     private bool canFire = true;
+    private bool canDistract = true;
 
 
     [Header("Other")]
     private Rigidbody2D rb;
     private Camera cam;
+
+    private GameObject activeRock;
 
     private int antidoteCount;
 
@@ -47,13 +53,19 @@ public class Player : MonoBehaviour
         GetMoveInput();
         PlayerMovement();
 
-        if (Input.GetButtonDown("Fire1")) MouseDown();
+        if (Input.GetButtonDown("Fire1")) LeftMouseDown();
+        if (Input.GetButtonDown("Fire2")) RightMouseDown();
     }
 
-    private void MouseDown()
+    private void LeftMouseDown()
     {
         if (canFire) FireBullet();
 
+    }
+
+    private void RightMouseDown()
+    {
+        if (canDistract) FireRock();
     }
 
 
@@ -109,6 +121,38 @@ public class Player : MonoBehaviour
         }
 
         ConnectedHostages = new List<Hostage>();
+    }
+
+    private void FireRock()
+    {
+        if (activeRock != null) Destroy(activeRock);
+
+        Quaternion playerRotation = Quaternion.AngleAxis(transform.eulerAngles.z, Vector3.forward);
+        GameObject rock = Instantiate(_rockPre, _firePoint.position, playerRotation);
+
+        activeRock = rock;
+        UpdateEnemyRockRefrences();
+
+        Rigidbody2D rockRB = rock.GetComponent<Rigidbody2D>();
+        rockRB.AddForce(transform.up * _rockSpeed, ForceMode2D.Impulse);
+        
+
+        canDistract = false;
+        StartCoroutine(RockCooldown());        
+    }
+
+    private void UpdateEnemyRockRefrences()
+    {
+        foreach (GameObject enemy in GameObject.FindGameObjectsWithTag("Enemy"))
+        {
+            enemy.GetComponent<Enemy>().Rock = activeRock;
+        }
+    }
+
+    private IEnumerator RockCooldown()
+    {
+        yield return new WaitForSeconds(_rockCooldownTime);
+        canDistract = true;
     }
 
     void OnTriggerEnter2D(Collider2D collision)

@@ -5,6 +5,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [Header("Shooting")]
+    [SerializeField] private GameObject _visionCone;
     [SerializeField] private GameObject _bulletPre;
     [SerializeField] private Transform _firePoint;
     [SerializeField] private float _bulletSpeed;
@@ -17,12 +18,24 @@ public class Enemy : MonoBehaviour
     [Header("Player Detection")]
     [SerializeField] private float _detectionFovAngle;
     [SerializeField] private float _detectionRange;
+    [SerializeField] private float _detectionRangeCalculationOffset;    
+    [SerializeField] private LayerMask _detectionLayers;
+    [SerializeField] private float _detectionCooldownTime;
     private GameObject playerObj;
+
+    private bool onCooldown;
+    private bool sentDetection;
+    private bool canSeePlayer;
+
+
     
 
     [Header("Other")]
+
+    public GameObject Rock;
     private Rigidbody2D rb;
     private Camera cam;
+
 
 
     
@@ -33,17 +46,58 @@ public class Enemy : MonoBehaviour
         rb = gameObject.GetComponent<Rigidbody2D>();
         cam = Camera.main;
         playerObj = GameObject.FindGameObjectWithTag("Player");
+
     }
     void Update()
     {
-        if (CanSeePlayer()) Aggrivated(); 
+        
+        float offsetRange = _detectionRange + _detectionRangeCalculationOffset;
+        float xScale = 2f * offsetRange * Mathf.Tan(_detectionFovAngle * 0.5f * Mathf.Deg2Rad);
+        _visionCone.transform.localScale = new Vector3(xScale,offsetRange,1);
+
+        canSeePlayer = CanSeePlayer(); 
+
+        if (canSeePlayer) Aggrivated();
+        else if (CanSeeRock()) Distracted();
+
+
+        if (canSeePlayer == false && sentDetection == true && onCooldown == false)
+        {
+            StartCoroutine(DetectionCooldown());
+        }
+
+        if (canSeePlayer == true && sentDetection == false) 
+        {
+            sentDetection = true;
+        
+            GameManager.Instance.EnemyDetected();
+        }
 
     }
 
+    private IEnumerator DetectionCooldown()
+    {
+        onCooldown = true;
+        yield return new WaitForSeconds(_detectionCooldownTime);
+        onCooldown = false;
+
+        if (canSeePlayer == false) 
+        {
+            sentDetection = false;
+        }
+
+    }
 
     private void Aggrivated()
     {
-        PointEnemyToPlayer();
+       
+        LookAtPosition(playerObj.transform.position);
+        if (canFire) FireBullet();
+    }
+
+    private void Distracted()
+    {
+        LookAtPosition(Rock.transform.position);
         if (canFire) FireBullet();
     }
 
@@ -54,26 +108,50 @@ public class Enemy : MonoBehaviour
 
         if (playerAngleFromView > _detectionFovAngle/2) return false;
         if (Vector2.Distance(playerObj.transform.position, transform.position) > _detectionRange) return false;
-        if (RaycastCheck(playerDirection) == false) return false;
+        if (RaycastCheckPlayer(playerDirection) == false) return false;
 
         return true;
     }
-    private bool RaycastCheck(Vector2 playerDirection)
+    private bool RaycastCheckPlayer(Vector2 playerDirection)
     {
-        RaycastHit2D hit = Physics2D.Raycast(_firePoint.position, playerDirection, _detectionRange);
+        RaycastHit2D hit = Physics2D.Raycast(_firePoint.position, playerDirection, _detectionRange, _detectionLayers);
 
         return hit.collider.gameObject.CompareTag("Player");
     }
 
 
-
-    private void PointEnemyToPlayer()
+    private bool CanSeeRock()
     {
-        Vector2 playerDirection = (playerObj.transform.position - transform.position).normalized;
-        float enemyAngle = (Mathf.Atan2(playerDirection.y, playerDirection.x) * Mathf.Rad2Deg) + _lookRotationOffset;
+        if (Rock == null) return false;
+
+        Vector2 rockDirection = (Rock.transform.position - transform.position).normalized;
+        float rockAngleFromView = Vector2.Angle(transform.up, rockDirection);
+
+        if (rockAngleFromView > _detectionFovAngle/2) return false;
+        if (Vector2.Distance(Rock.transform.position, transform.position) > _detectionRange) return false;
+        if (RaycastCheckRock(rockDirection) == false) return false;
+
+        return true;
+    }
+
+    private bool RaycastCheckRock(Vector2 rockDirection)
+    {
+        RaycastHit2D hit = Physics2D.Raycast(_firePoint.position, rockDirection, _detectionRange, _detectionLayers);
+
+        return hit.collider.gameObject.CompareTag("Rock");
+    }
+
+
+
+
+    private void LookAtPosition(Vector2 positionToLook)
+    {
+        Vector2 lookDirection = (positionToLook - (Vector2)transform.position).normalized;
+        float enemyAngle = (Mathf.Atan2(lookDirection.y, lookDirection.x) * Mathf.Rad2Deg) + _lookRotationOffset;
 
         rb.SetRotation(enemyAngle);
     }
+
     private void FireBullet()
     {
         Quaternion enemyRotation = Quaternion.AngleAxis(transform.eulerAngles.z, Vector3.forward);

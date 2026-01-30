@@ -7,7 +7,14 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance { get { return instance; } }
 
+    public bool LevelHasEliminationMission;
+    public bool LevelHasDetectionMission;
+    public bool LevelHasCureMission;
+    public bool LevelHasSaveMission;
+    public bool LevelHasTimeMission;
+
     public bool CompletedEliminationMission;
+    public bool CompletedDetectionMission;
     public bool CompletedCureMission;
     public bool CompletedSaveMission;
     public bool CompletedTimeMission;
@@ -16,9 +23,11 @@ public class GameManager : MonoBehaviour
     public int RequiredHostageCuredAmount;
     public int RequiredHostageSavedAmount;
     public int RequiredCompletionTime;
+    public int RequiredMaximumDetectionAmount;
 
 
     public int EnemyEliminatedAmount {get; private set;}
+    public int EnemyDetectionAmount {get; private set;}
     public int HostageCuredAmount {get; private set;}
     public int HostageSavedAmount {get; private set;}
 
@@ -65,6 +74,7 @@ public class GameManager : MonoBehaviour
         if (EnemyEliminatedAmount >= RequiredEnemyEliminatedAmount) CompletedEliminationMission = true;
         if (HostageCuredAmount >= RequiredHostageCuredAmount) CompletedCureMission = true;
         if (HostageSavedAmount >= RequiredHostageSavedAmount) CompletedSaveMission = true;
+        if (EnemyDetectionAmount >= RequiredMaximumDetectionAmount) CompletedDetectionMission = false;
     }
 
     public void HostageCured()
@@ -79,5 +89,10 @@ public class GameManager : MonoBehaviour
     public void EnemyEliminated()
     {
         EnemyEliminatedAmount++;
+    }
+
+    public void EnemyDetected()
+    {
+        EnemyDetectionAmount++;
     }
 }
