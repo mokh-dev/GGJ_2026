@@ -10,9 +10,11 @@ public class Enemy : MonoBehaviour
     [SerializeField] private Transform _firePoint;
     [SerializeField] private float _bulletSpeed;
     [SerializeField] private float _firingCooldownTime;
+    [SerializeField] private float _rockConfusionTime;
     [SerializeField] private float _bulletLifeSpan;
     [SerializeField] private float _lookRotationOffset;
     private bool canFire = true;
+    private bool canFireRock;
 
 
     [Header("Player Detection")]
@@ -24,6 +26,7 @@ public class Enemy : MonoBehaviour
     private GameObject playerObj;
 
     private bool onCooldown;
+    private bool onRockCooldown;
     private bool sentDetection;
     private bool canSeePlayer;
 
@@ -98,7 +101,16 @@ public class Enemy : MonoBehaviour
     private void Distracted()
     {
         LookAtPosition(Rock.transform.position);
-        if (canFire) FireBullet();
+        if (canFireRock) 
+        {
+            canFireRock = false;
+            FireBullet();
+        }
+        else if (onRockCooldown == false)
+        {
+            onRockCooldown = true;
+            StartCoroutine(RockConfusion());
+        }
     }
 
     private bool CanSeePlayer()
@@ -170,6 +182,14 @@ public class Enemy : MonoBehaviour
     {
         yield return new WaitForSeconds(_firingCooldownTime);
         canFire = true;
+    }
+
+    private IEnumerator RockConfusion()
+    {
+        yield return new WaitForSeconds(_rockConfusionTime);
+
+        onRockCooldown = false;
+        canFireRock = true;
     }
 
 

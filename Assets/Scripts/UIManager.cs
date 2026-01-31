@@ -28,7 +28,7 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         if (gameManager.LevelHasTimeMission) UpdateMissionStatusUI(gameManager.CompletedTimeMission, gameManager.TimePassed, gameManager.RequiredCompletionTime, _completionTimeText);
-        if (gameManager.LevelHasEliminationMission) UpdateMissionStatusUI(gameManager.CompletedEliminationMission, gameManager.EnemyEliminatedAmount, gameManager.RequiredEnemyEliminatedAmount,  _enemyEliminatedText);
+        if (gameManager.LevelHasEliminationMission) UpdateMissionStatusUI(gameManager.CompletedEliminationMission, gameManager.EnemyEliminatedAmount, gameManager.RequiredMaxEliminationsAmount,  _enemyEliminatedText);
         if (gameManager.LevelHasDetectionMission) UpdateMissionStatusUI(gameManager.CompletedDetectionMission, gameManager.EnemyDetectionAmount, gameManager.RequiredMaximumDetectionAmount,  _enemyDetectionText);
         if (gameManager.LevelHasCureMission) UpdateMissionStatusUI(gameManager.CompletedCureMission, gameManager.HostageCuredAmount, gameManager.RequiredHostageCuredAmount, _hostageCuredText);
         if (gameManager.LevelHasSaveMission) UpdateMissionStatusUI(gameManager.CompletedSaveMission, gameManager.HostageSavedAmount, gameManager.RequiredHostageSavedAmount, _hostageSavedText);

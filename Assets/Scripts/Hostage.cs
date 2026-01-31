@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class Hostage : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class Hostage : MonoBehaviour
     [SerializeField] private Color _curedColor;
     [SerializeField] private float _followDistance;
     [SerializeField] private float _moveSpeed;
+    [SerializeField] private Light2D _light;
 
     private SpriteRenderer sr;
     private Rigidbody2D rb;
@@ -41,6 +43,7 @@ public class Hostage : MonoBehaviour
 
     public void SaveHostage()
     {
+        _light.enabled = false;
         joint.enabled = false;
         IsSaved = true;
     }
@@ -50,6 +53,8 @@ public class Hostage : MonoBehaviour
         GameManager.Instance.HostageCured();
 
         sr.color = _curedColor;
+
+        _light.enabled = true;
 
         joint.enabled = true;
         joint.connectedBody = objToConnect.GetComponent<Rigidbody2D>();

@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public bool CompletedSaveMission;
     public bool CompletedTimeMission;
 
-    public int RequiredEnemyEliminatedAmount;
+    public int RequiredMaxEliminationsAmount;
     public int RequiredHostageCuredAmount;
     public int RequiredHostageSavedAmount;
     public int RequiredCompletionTime;
@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
 
     private void MissionChecks()
     {
-        if (EnemyEliminatedAmount >= RequiredEnemyEliminatedAmount) CompletedEliminationMission = true;
+        if (EnemyEliminatedAmount >= RequiredMaxEliminationsAmount) CompletedEliminationMission = false;
         if (HostageCuredAmount >= RequiredHostageCuredAmount) CompletedCureMission = true;
         if (HostageSavedAmount >= RequiredHostageSavedAmount) CompletedSaveMission = true;
         if (EnemyDetectionAmount >= RequiredMaximumDetectionAmount) CompletedDetectionMission = false;
